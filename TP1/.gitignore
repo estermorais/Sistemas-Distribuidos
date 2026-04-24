@@ -1,0 +1,17 @@
+pipes
+semaforos
+*.o
+*.aux
+*.log
+*.out
+*.toc
+# manter fora do repo: CSVs de ocupacao intermediarios
+occ_N*.csv
+# manter: arquivos gerados do relatorio
+!relatorio.pdf
+!tempo_medio.png
+!occ_N1_Np1_Nc1.png
+!occ_N10_Np1_Nc1.png
+!occ_N100_Np1_Nc1.png
+!occ_N1000_Np4_Nc4.png
+!results.csv
