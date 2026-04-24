@@ -1,0 +1,222 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[brazil]{babel}
+\usepackage{geometry}
+\usepackage{hyperref}
+\usepackage{booktabs}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+
+\geometry{top=2cm, bottom=2cm, left=2.5cm, right=2.5cm}
+
+\hypersetup{colorlinks=true, urlcolor=blue, linkcolor=blue}
+
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    frame=single, breaklines=true,
+    numbers=left, numberstyle=\tiny
+}
+
+\title{
+    \textbf{Sistemas Distribuídos -- CEFET-MG}\\
+    \large Trabalho Prático 2: Transferência de Arquivos Peer-to-Peer\\
+    2026/1
+}
+\author{Ester Morais Neves \\
+        \small estermoraisneves@gmail.com}
+\date{\today}
+
+\begin{document}
+\maketitle
+\thispagestyle{empty}
+
+\textbf{Código-fonte:}
+\url{https://github.com/estermorais/Sistemas-Distribuidos/tree/main/TP2}
+
+% -------------------------------------------------------
+\section{Decisões de Projeto}
+
+\subsection{Linguagem e bibliotecas}
+
+A implementação foi realizada em \textbf{Python 3} (sem dependências externas),
+utilizando os módulos \texttt{socket}, \texttt{threading}, \texttt{struct},
+\texttt{json} e \texttt{hashlib}. A escolha do Python permite código conciso
+para operações de rede e facilita a leitura do protocolo implementado.
+
+\subsection{Arquitetura do Peer}
+
+Cada peer é um processo único com duas threads principais:
+
+\begin{itemize}
+    \item \textbf{Thread Servidor}: fica bloqueada em \texttt{accept()},
+          aceitando conexões de outros peers. Para cada conexão,
+          uma nova thread \emph{handler} é disparada, permitindo
+          atender múltiplos peers simultaneamente.
+    \item \textbf{Thread Cliente}: itera sobre os blocos faltantes e
+          solicita cada um aos vizinhos configurados. À medida que
+          recebe blocos, atualiza o registro local e passa a servi-los
+          imediatamente (o peer torna-se \emph{seeder parcial}).
+\end{itemize}
+
+Um \texttt{threading.Lock} protege o acesso concorrente ao buffer de blocos
+e ao registro booleano (\texttt{block\_registry}).
+
+\subsection{Protocolo de Mensagens}
+
+As mensagens seguem um protocolo binário com \textbf{header fixo de 12 bytes}:
+
+\begin{center}
+\texttt{[ type (4B) | block\_id (4B) | length (4B) | payload (length B) ]}
+\end{center}
+
+\begin{tabular}{cll}
+\toprule
+\texttt{type} & Nome & Descrição \\
+\midrule
+1 & \texttt{REQUEST} & Cliente solicita um bloco \\
+2 & \texttt{DATA}    & Servidor envia os dados do bloco \\
+3 & \texttt{NOHAVE}  & Servidor não possui o bloco solicitado \\
+\bottomrule
+\end{tabular}
+
+\vspace{6pt}
+A função \texttt{recv\_exact(sock, n)} garante que exatamente \texttt{n} bytes
+sejam recebidos, evitando leituras parciais comuns em TCP.
+
+\subsection{Metadados}
+
+O \emph{Seeder} inicial gera um arquivo JSON com os campos:
+\texttt{filename}, \texttt{file\_size}, \texttt{block\_size},
+\texttt{total\_blocks} e \texttt{sha256} do arquivo original.
+Este arquivo é distribuído manualmente aos \emph{leechers} antes do início
+da transferência (configuração estática, sem \emph{tracker}).
+
+\subsection{Gerenciamento de Blocos}
+
+Cada peer mantém um dicionário \texttt{blocks \{id: bytes\}} e um
+dicionário booleano \texttt{block\_registry \{id: bool\}}.
+O cliente solicita blocos em ordem crescente de índice, tentando cada
+vizinho até obter o bloco ou esgotar a lista.
+Quando um bloco é inserido no dicionário sob o lock, o servidor já o
+enxerga e pode servi-lo a outros peers imediatamente.
+
+\subsection{Verificação de Integridade}
+
+Após receber todos os blocos, o leecher remonta o arquivo,
+trunca para o tamanho exato e calcula o SHA-256 do resultado,
+comparando com o hash armazenado nos metadados.
+O processo encerra com código de erro se os hashes diferirem.
+
+% -------------------------------------------------------
+\section{Estudo de Caso}
+
+\subsection{Configuração}
+
+Os testes foram executados localmente (\texttt{localhost}),
+com \textbf{bloco de 1024 bytes} (padrão) e \textbf{4096 bytes} (variação).
+Para cada cenário, o script \texttt{test.sh} inicia os peers, aguarda
+a conclusão dos leechers e verifica o SHA-256 do arquivo recebido.
+
+\subsection{Resultados --- Bloco 1024 bytes}
+
+\begin{table}[H]
+\centering
+\caption{Bloco = 1\,024 bytes, 2 peers (Seeder + Leecher)}
+\label{tab:1024_2p}
+\begin{tabular}{lrrrc}
+\toprule
+Arquivo & Tamanho & Blocos & Tempo (s) & Throughput & SHA-256 \\
+\midrule
+File A & 10\,KB  &   10  & 0,51 & 19,7\,KB/s  & OK \\
+File A & 20\,KB  &   20  & 0,51 & 39,0\,KB/s  & OK \\
+File B &  1\,MB  & 1024  & 1,09 & 934,9\,KB/s & OK \\
+File B &  5\,MB  & 5120  & 5,27 & 970,5\,KB/s & OK \\
+File C & 10\,MB  &10240  &14,77 & 694,0\,KB/s & OK \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Bloco = 1\,024 bytes, 4 peers (1 Seeder + 3 Leechers)}
+\label{tab:1024_4p}
+\begin{tabular}{lrrc}
+\toprule
+Arquivo & Tamanho & Leechers & SHA-256 \\
+\midrule
+File A & 10\,KB & 3 & OK \\
+File B &  1\,MB & 3 & OK \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Resultados --- Bloco 4096 bytes}
+
+\begin{table}[H]
+\centering
+\caption{Bloco = 4\,096 bytes, 2 peers}
+\label{tab:4096_2p}
+\begin{tabular}{lrrrc}
+\toprule
+Arquivo & Tamanho & Blocos & Tempo (s) & Throughput & SHA-256 \\
+\midrule
+File A & 10\,KB  &   3  & 0,51 &  19,8\,KB/s & OK \\
+File A & 20\,KB  &   5  & 0,51 &  39,5\,KB/s & OK \\
+File B &  1\,MB  & 256  & 0,67 &\textbf{1\,557,9\,KB/s} & OK \\
+File B &  5\,MB  &1280  & 1,27 &\textbf{4\,032,5\,KB/s} & OK \\
+File C & 10\,MB  &2560  & 2,22 &\textbf{4\,615,2\,KB/s} & OK \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{table}[H]
+\centering
+\caption{Bloco = 4\,096 bytes, 4 peers (1 Seeder + 3 Leechers)}
+\label{tab:4096_4p}
+\begin{tabular}{lrrc}
+\toprule
+Arquivo & Tamanho & Leechers & SHA-256 \\
+\midrule
+File A & 10\,KB & 3 & OK \\
+File B &  1\,MB & 3 & OK \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsection{Análise}
+
+\paragraph{Impacto do tamanho do bloco.}
+Blocos maiores (4\,KB vs 1\,KB) reduzem o número total de conexões TCP e o
+overhead de headers, resultando em throughput muito superior para arquivos médios
+e grandes: $\approx 1{,}56$\,MB/s contra $\approx 935$\,KB/s no File B de 1\,MB,
+e $\approx 4{,}6$\,MB/s contra $\approx 694$\,KB/s no File C de 10\,MB.
+Para arquivos pequenos (10--20\,KB) o impacto é desprezível, pois o overhead
+de conexão domina o tempo total.
+
+\paragraph{Impacto do número de peers.}
+Com 4 peers, os leechers B, C e D recebem blocos simultâneos: C e D podem
+buscar blocos no peer B (que já os recebeu de A) em paralelo à transferência
+A$\to$B, distribuindo a carga do seeder inicial. Todos os três leechers
+concluem a transferência com SHA-256 correto.
+
+\paragraph{Integridade.}
+Todos os 14 cenários testados produziram SHA-256 idêntico ao original,
+confirmando que o protocolo garante integridade mesmo sob acesso concorrente
+ao buffer de blocos.
+
+% -------------------------------------------------------
+\section{Conclusão}
+
+A implementação demonstra os princípios centrais do modelo P2P: simetria
+(cada peer serve e consome simultaneamente), fragmentação de arquivos e
+remontagem verificada por hash. O protocolo binário simples mostrou-se
+suficiente para transferências confiáveis em rede local. Como evolução
+natural, conexões persistentes por peer (em vez de uma por bloco) e
+estratégias de seleção de blocos mais inteligentes (\emph{rarest-first})
+aumentariam o throughput em redes com maior latência.
+
+\end{document}
