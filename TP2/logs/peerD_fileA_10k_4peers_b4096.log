@@ -1,0 +1,18 @@
+[LEECHER] 'fileA_10k.bin'  3 blocos  10240 bytes
+[SERVER] ouvindo na porta 5003 (select/non-blocking)
+[CLIENT] conectado a 127.0.0.1:5000
+[CLIENT] tentativa 1/5 falhou (127.0.0.1:5001): [Errno 111] Connection refused
+[CLIENT] tentativa 2/5 falhou (127.0.0.1:5001): [Errno 111] Connection refused
+[CLIENT] tentativa 3/5 falhou (127.0.0.1:5001): [Errno 111] Connection refused
+[CLIENT] tentativa 4/5 falhou (127.0.0.1:5001): [Errno 111] Connection refused
+[CLIENT] tentativa 5/5 falhou (127.0.0.1:5001): [Errno 111] Connection refused
+[CLIENT] nao foi possivel conectar a 127.0.0.1:5001
+[CLIENT] bloco     0/2  (33.3%)  <- 127.0.0.1:5000
+[CLIENT] bloco     1/2  (66.7%)  <- 127.0.0.1:5000
+[CLIENT] bloco     2/2  (100.0%)  <- 127.0.0.1:5000
+
+[ASSEMBLE] remontando fileA_10k.bin ...
+[ASSEMBLE] arquivo : output/received_p5003_fileA_10k.bin  (10240 bytes)
+[ASSEMBLE] tempo   : 3.004 s  (3.3 KB/s)
+[ASSEMBLE] sha256  : OK
+[DONE] transferencia concluida.

@@ -1,0 +1,19 @@
+[LEECHER] 'fileA_10k.bin'  10 blocos  10240 bytes
+[SERVER] ouvindo na porta 5001 (select/non-blocking)
+[CLIENT] conectado a 127.0.0.1:5000
+[CLIENT] bloco     0/9  (10.0%)  <- 127.0.0.1:5000
+[CLIENT] bloco     1/9  (20.0%)  <- 127.0.0.1:5000
+[CLIENT] bloco     2/9  (30.0%)  <- 127.0.0.1:5000
+[CLIENT] bloco     3/9  (40.0%)  <- 127.0.0.1:5000
+[CLIENT] bloco     4/9  (50.0%)  <- 127.0.0.1:5000
+[CLIENT] bloco     5/9  (60.0%)  <- 127.0.0.1:5000
+[CLIENT] bloco     6/9  (70.0%)  <- 127.0.0.1:5000
+[CLIENT] bloco     7/9  (80.0%)  <- 127.0.0.1:5000
+[CLIENT] bloco     8/9  (90.0%)  <- 127.0.0.1:5000
+[CLIENT] bloco     9/9  (100.0%)  <- 127.0.0.1:5000
+
+[ASSEMBLE] remontando fileA_10k.bin ...
+[ASSEMBLE] arquivo : output/received_p5001_fileA_10k.bin  (10240 bytes)
+[ASSEMBLE] tempo   : 0.504 s  (19.9 KB/s)
+[ASSEMBLE] sha256  : OK
+[DONE] transferencia concluida.

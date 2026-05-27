@@ -1,0 +1,7 @@
+{
+  "filename": "fileC_10m.bin",
+  "file_size": 10485760,
+  "block_size": 4096,
+  "total_blocks": 2560,
+  "sha256": "54dd0f3cada177878c656260b3f46a4a515157508173e8766e46b79b255e8d8b"
+}

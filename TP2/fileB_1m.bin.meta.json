@@ -1,0 +1,7 @@
+{
+  "filename": "fileB_1m.bin",
+  "file_size": 1048576,
+  "block_size": 4096,
+  "total_blocks": 256,
+  "sha256": "7ffc2bb81d698cfec258b4b8f9f7260bb6fa13b75335e9f34a7489af418ab57d"
+}

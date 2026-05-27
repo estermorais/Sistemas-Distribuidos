@@ -1,0 +1,7 @@
+{
+  "filename": "fileA_10k.bin",
+  "file_size": 10240,
+  "block_size": 4096,
+  "total_blocks": 3,
+  "sha256": "031a6de40d153e7bd3b31598c41904de442fdbffadb4244ef8ba2541a996e9ef"
+}

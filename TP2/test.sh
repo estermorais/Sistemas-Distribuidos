@@ -48,27 +48,29 @@ run_test_2peers() {
     $PYTHON $PEER --meta-only --file $FILE --meta ${FILE}.meta.json \
         --block-size $BLOCK_SIZE > /dev/null 2>&1
 
+    local BLOG=b${BLOCK_SIZE}
+
     # inicia seeder em background
     $PYTHON $PEER --port $PORT_S --file $FILE --meta ${FILE}.meta.json \
-        --block-size $BLOCK_SIZE > $LOG_DIR/seeder_${LABEL}.log 2>&1 &
+        --block-size $BLOCK_SIZE > $LOG_DIR/seeder_${LABEL}_${BLOG}.log 2>&1 &
     SEEDER_PID=$!
     sleep 0.5
 
     # inicia leecher e aguarda terminar
     $PYTHON $PEER --port $PORT_L --meta ${FILE}.meta.json \
         --neighbors 127.0.0.1:$PORT_S \
-        --output $OUT_DIR > $LOG_DIR/leecher_${LABEL}.log 2>&1
+        --output $OUT_DIR > $LOG_DIR/leecher_${LABEL}_${BLOG}.log 2>&1
     STATUS=$?
 
     kill $SEEDER_PID 2>/dev/null
     wait $SEEDER_PID 2>/dev/null
 
-    if [ $STATUS -eq 0 ] && grep -q "sha256  : OK" $LOG_DIR/leecher_${LABEL}.log; then
-        SPEED=$(grep "tempo" $LOG_DIR/leecher_${LABEL}.log | grep -oP '[0-9.]+ KB/s')
+    if [ $STATUS -eq 0 ] && grep -q "sha256  : OK" $LOG_DIR/leecher_${LABEL}_${BLOG}.log; then
+        SPEED=$(grep "tempo" $LOG_DIR/leecher_${LABEL}_${BLOG}.log | grep -oP '[0-9.]+ KB/s')
         pass "$LABEL  ($SPEED)"
     else
         fail "$LABEL"
-        cat $LOG_DIR/leecher_${LABEL}.log
+        cat $LOG_DIR/leecher_${LABEL}_${BLOG}.log
     fi
 }
 
@@ -84,12 +86,14 @@ run_test_4peers() {
 
     info "--- Teste 4 peers | $LABEL | bloco=${BLOCK_SIZE}B ---"
 
+    local BLOG=b${BLOCK_SIZE}
+
     $PYTHON $PEER --meta-only --file $FILE --meta ${FILE}.meta.json \
         --block-size $BLOCK_SIZE > /dev/null 2>&1
 
     # peer A: seeder
     $PYTHON $PEER --port 5000 --file $FILE --meta ${FILE}.meta.json \
-        --block-size $BLOCK_SIZE > $LOG_DIR/peerA_${LABEL}.log 2>&1 &
+        --block-size $BLOCK_SIZE > $LOG_DIR/peerA_${LABEL}_${BLOG}.log 2>&1 &
     PID_A=$!
 
     sleep 0.3
@@ -97,7 +101,7 @@ run_test_4peers() {
     # peer B: leecher de A
     $PYTHON $PEER --port 5001 --meta ${FILE}.meta.json \
         --neighbors 127.0.0.1:5000 \
-        --output $OUT_DIR > $LOG_DIR/peerB_${LABEL}.log 2>&1 &
+        --output $OUT_DIR > $LOG_DIR/peerB_${LABEL}_${BLOG}.log 2>&1 &
     PID_B=$!
 
     sleep 0.3
@@ -105,13 +109,13 @@ run_test_4peers() {
     # peer C: leecher de A e B
     $PYTHON $PEER --port 5002 --meta ${FILE}.meta.json \
         --neighbors 127.0.0.1:5000 127.0.0.1:5001 \
-        --output $OUT_DIR > $LOG_DIR/peerC_${LABEL}.log 2>&1 &
+        --output $OUT_DIR > $LOG_DIR/peerC_${LABEL}_${BLOG}.log 2>&1 &
     PID_C=$!
 
     # peer D: leecher de A e B
     $PYTHON $PEER --port 5003 --meta ${FILE}.meta.json \
         --neighbors 127.0.0.1:5000 127.0.0.1:5001 \
-        --output $OUT_DIR > $LOG_DIR/peerD_${LABEL}.log 2>&1 &
+        --output $OUT_DIR > $LOG_DIR/peerD_${LABEL}_${BLOG}.log 2>&1 &
     PID_D=$!
 
     # aguarda leechers terminarem
@@ -121,7 +125,9 @@ run_test_4peers() {
     wait $PID_A 2>/dev/null
 
     local ALL_OK=1
-    for PEER_LOG in $LOG_DIR/peerB_${LABEL}.log $LOG_DIR/peerC_${LABEL}.log $LOG_DIR/peerD_${LABEL}.log; do
+    for PEER_LOG in $LOG_DIR/peerB_${LABEL}_${BLOG}.log \
+                    $LOG_DIR/peerC_${LABEL}_${BLOG}.log \
+                    $LOG_DIR/peerD_${LABEL}_${BLOG}.log; do
         if ! grep -q "sha256  : OK" $PEER_LOG 2>/dev/null; then
             ALL_OK=0
             fail "$LABEL ($(basename $PEER_LOG))"

@@ -139,11 +139,11 @@ a conclusão dos leechers e verifica o SHA-256 do arquivo recebido.
 \toprule
 Arquivo & Tamanho & Blocos & Tempo (s) & Throughput & SHA-256 \\
 \midrule
-File A & 10\,KB  &   10  & 0,51 & 19,7\,KB/s  & OK \\
-File A & 20\,KB  &   20  & 0,51 & 39,0\,KB/s  & OK \\
-File B &  1\,MB  & 1024  & 1,09 & 934,9\,KB/s & OK \\
-File B &  5\,MB  & 5120  & 5,27 & 970,5\,KB/s & OK \\
-File C & 10\,MB  &10240  &14,77 & 694,0\,KB/s & OK \\
+File A & 10\,KB  &    10 & 0,50 &  19,8\,KB/s  & OK \\
+File A & 20\,KB  &    20 & 0,52 &  38,4\,KB/s  & OK \\
+File B &  1\,MB  &  1024 & 0,79 &   1\,292,7\,KB/s & OK \\
+File B &  5\,MB  &  5120 & 3,42 &   1\,497,5\,KB/s & OK \\
+File C & 10\,MB  & 10240 & 9,52 &   1\,075,7\,KB/s & OK \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -152,12 +152,13 @@ File C & 10\,MB  &10240  &14,77 & 694,0\,KB/s & OK \\
 \centering
 \caption{Bloco = 1\,024 bytes, 4 peers (1 Seeder + 3 Leechers)}
 \label{tab:1024_4p}
-\begin{tabular}{lrrc}
+\begin{tabular}{lrrrc}
 \toprule
-Arquivo & Tamanho & Leechers & SHA-256 \\
+Arquivo & Tamanho & Leechers & Throughput (peer B) & SHA-256 \\
 \midrule
-File A & 10\,KB & 3 & OK \\
-File B &  1\,MB & 3 & OK \\
+File A & 10\,KB & 3 &  19,9\,KB/s & OK \\
+File B &  1\,MB & 3 &  1\,316,2\,KB/s & OK \\
+File C & 10\,MB & 3 &   896,9\,KB/s & OK \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -174,9 +175,9 @@ Arquivo & Tamanho & Blocos & Tempo (s) & Throughput & SHA-256 \\
 \midrule
 File A & 10\,KB  &    3 & 0,50 &  19,9\,KB/s & OK \\
 File A & 20\,KB  &    5 & 0,50 &  39,8\,KB/s & OK \\
-File B &  1\,MB  &  256 & 0,57 &\textbf{1\,790,6\,KB/s} & OK \\
-File B &  5\,MB  & 1280 & 0,87 &\textbf{5\,908,8\,KB/s} & OK \\
-File C & 10\,MB  & 2560 & 1,54 &\textbf{6\,661,7\,KB/s} & OK \\
+File B &  1\,MB  &  256 & 0,55 &\textbf{1\,855,3\,KB/s} & OK \\
+File B &  5\,MB  & 1280 & 0,88 &\textbf{5\,827,0\,KB/s} & OK \\
+File C & 10\,MB  & 2560 & 1,56 &\textbf{6\,562,8\,KB/s} & OK \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -191,9 +192,9 @@ Arquivo & Tamanho & Leecher & Tempo (s) & Throughput & SHA-256 \\
 \midrule
 File A & 10\,KB & B, C, D &   0,50 &  19,9\,KB/s & OK \\
 File B &  1\,MB & B, C, D &  $\leq$0,65 & $\geq$1\,576\,KB/s & OK \\
-File C & 10\,MB & B & 2,23 & 4\,600,3\,KB/s & OK \\
-File C & 10\,MB & C & 2,03 & 5\,057,8\,KB/s & OK \\
-File C & 10\,MB & D & 1,98 & 5\,165,7\,KB/s & OK \\
+File C & 10\,MB & B & 1,76 & 5\,831,2\,KB/s & OK \\
+File C & 10\,MB & C & 1,98 & 5\,185,2\,KB/s & OK \\
+File C & 10\,MB & D & 1,99 & 5\,145,0\,KB/s & OK \\
 \bottomrule
 \end{tabular}
 \end{table}
