@@ -9,6 +9,7 @@
 \usepackage{float}
 \usepackage{listings}
 \usepackage{xcolor}
+\usepackage{graphicx}
 
 \geometry{top=2cm, bottom=2cm, left=2.5cm, right=2.5cm}
 
@@ -186,6 +187,29 @@ File B &  1\,MB & 3 & OK \\
 \bottomrule
 \end{tabular}
 \end{table}
+
+\subsection{Gráficos de Desempenho}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{throughput.png}
+    \caption{Throughput de transferência por arquivo e tamanho de bloco (2 peers).}
+    \label{fig:throughput}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{tempo.png}
+    \caption{Tempo de transferência por arquivo e tamanho de bloco (2 peers).}
+    \label{fig:tempo}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.95\linewidth]{ganho.png}
+    \caption{Fator de ganho de throughput ao usar blocos de 4 KB em vez de 1 KB.}
+    \label{fig:ganho}
+\end{figure}
 
 \subsection{Análise}
 
