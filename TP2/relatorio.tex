@@ -27,8 +27,7 @@
     \large Trabalho Prático 2: Transferência de Arquivos Peer-to-Peer\\
     2026/1
 }
-\author{Ester Morais Neves \\
-        \small estermoraisneves@gmail.com}
+\author{Ester Morais Neves \and Laura Pianetti Veloso}
 \date{\today}
 
 \begin{document}
@@ -140,10 +139,10 @@ a conclusão dos leechers e verifica o SHA-256 do arquivo recebido.
 Arquivo & Tamanho & Blocos & Tempo (s) & Throughput & SHA-256 \\
 \midrule
 File A & 10\,KB  &    10 & 0,50 &  19,8\,KB/s  & OK \\
-File A & 20\,KB  &    20 & 0,52 &  38,4\,KB/s  & OK \\
-File B &  1\,MB  &  1024 & 0,79 &   1\,292,7\,KB/s & OK \\
-File B &  5\,MB  &  5120 & 3,42 &   1\,497,5\,KB/s & OK \\
-File C & 10\,MB  & 10240 & 9,52 &   1\,075,7\,KB/s & OK \\
+File A & 20\,KB  &    20 & 0,51 &  39,4\,KB/s  & OK \\
+File B &  1\,MB  &  1024 & 0,79 &   1\,290,1\,KB/s & OK \\
+File B &  5\,MB  &  5120 & 3,47 &   1\,475,7\,KB/s & OK \\
+File C & 10\,MB  & 10240 & 9,65 &   1\,061,7\,KB/s & OK \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -157,8 +156,8 @@ File C & 10\,MB  & 10240 & 9,52 &   1\,075,7\,KB/s & OK \\
 Arquivo & Tamanho & Leechers & Throughput (peer B) & SHA-256 \\
 \midrule
 File A & 10\,KB & 3 &  19,9\,KB/s & OK \\
-File B &  1\,MB & 3 &  1\,316,2\,KB/s & OK \\
-File C & 10\,MB & 3 &   896,9\,KB/s & OK \\
+File B &  1\,MB & 3 &  1\,332,3\,KB/s & OK \\
+File C & 10\,MB & 3 &   827,4\,KB/s & OK \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -173,11 +172,11 @@ File C & 10\,MB & 3 &   896,9\,KB/s & OK \\
 \toprule
 Arquivo & Tamanho & Blocos & Tempo (s) & Throughput & SHA-256 \\
 \midrule
-File A & 10\,KB  &    3 & 0,50 &  19,9\,KB/s & OK \\
-File A & 20\,KB  &    5 & 0,50 &  39,8\,KB/s & OK \\
-File B &  1\,MB  &  256 & 0,55 &\textbf{1\,855,3\,KB/s} & OK \\
-File B &  5\,MB  & 1280 & 0,88 &\textbf{5\,827,0\,KB/s} & OK \\
-File C & 10\,MB  & 2560 & 1,56 &\textbf{6\,562,8\,KB/s} & OK \\
+File A & 10\,KB  &    3 & 0,50 &  19,8\,KB/s & OK \\
+File A & 20\,KB  &    5 & 0,50 &  39,7\,KB/s & OK \\
+File B &  1\,MB  &  256 & 0,56 &\textbf{1\,845,6\,KB/s} & OK \\
+File B &  5\,MB  & 1280 & 0,87 &\textbf{5\,896,8\,KB/s} & OK \\
+File C & 10\,MB  & 2560 & 1,54 &\textbf{6\,670,8\,KB/s} & OK \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -190,11 +189,13 @@ File C & 10\,MB  & 2560 & 1,56 &\textbf{6\,562,8\,KB/s} & OK \\
 \toprule
 Arquivo & Tamanho & Leecher & Tempo (s) & Throughput & SHA-256 \\
 \midrule
-File A & 10\,KB & B, C, D &   0,50 &  19,9\,KB/s & OK \\
-File B &  1\,MB & B, C, D &  $\leq$0,65 & $\geq$1\,576\,KB/s & OK \\
-File C & 10\,MB & B & 1,76 & 5\,831,2\,KB/s & OK \\
-File C & 10\,MB & C & 1,98 & 5\,185,2\,KB/s & OK \\
-File C & 10\,MB & D & 1,99 & 5\,145,0\,KB/s & OK \\
+File A & 10\,KB & B &   0,50 &  19,9\,KB/s & OK \\
+File A & 10\,KB & C, D &   3,02 &   3,3\,KB/s & OK \\
+File B &  1\,MB & B &   0,56 & 1\,845,1\,KB/s & OK \\
+File B &  1\,MB & C, D &   3,06 & $\sim$335\,KB/s & OK \\
+File C & 10\,MB & B & 2,21 & 4\,624,7\,KB/s & OK \\
+File C & 10\,MB & C & 1,98 & 5\,179,1\,KB/s & OK \\
+File C & 10\,MB & D & 1,99 & 5\,151,1\,KB/s & OK \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -227,20 +228,25 @@ File C & 10\,MB & D & 1,99 & 5\,145,0\,KB/s & OK \\
 \paragraph{Impacto do tamanho do bloco.}
 Blocos maiores (4\,KB vs 1\,KB) reduzem o número de round-trips TCP e o
 overhead de headers, resultando em throughput significativamente superior para
-arquivos médios e grandes. Com conexões persistentes, o ganho é ainda mais
-evidente: $\approx 1{,}79$\,MB/s com 4\,KB contra $\approx 935$\,KB/s com 1\,KB
-no File B de 1\,MB, e $\approx 6{,}66$\,MB/s contra $\approx 694$\,KB/s no
-File C de 10\,MB. Para arquivos pequenos (10--20\,KB) o impacto é desprezível,
-pois o overhead de handshake domina o tempo total.
+arquivos médios e grandes. Com conexões persistentes, o ganho é evidente:
+$\approx 1{,}80$\,MB/s com 4\,KB contra $\approx 1{,}26$\,MB/s com 1\,KB
+no File B de 1\,MB (ganho $\approx 1{,}43\times$), e
+$\approx 6{,}51$\,MB/s contra $\approx 1{,}04$\,MB/s no File C de 10\,MB
+(ganho $\approx 6{,}29\times$). Para arquivos pequenos (10--20\,KB) o
+impacto é desprezível, pois o overhead de conexão domina o tempo total.
 
 \paragraph{Impacto do número de peers.}
-Com 4 peers, C e D podem buscar blocos no peer B (que já os recebeu de A)
-em paralelo à transferência A$\to$B, distribuindo a carga do seeder inicial.
-No teste com File C (10\,MB) e 4 peers, os três leechers concluíram com
-throughput entre 4,6 e 5,2\,MB/s, confirmando que a carga foi distribuída
-entre os peers B e A. O servidor não-bloqueante baseado em \texttt{select()}
-permitiu que o seeder atendesse múltiplos leechers simultâneos com um único
-loop de eventos, sem degradação perceptível de throughput.
+Com 4 peers, C e D conectam-se a A e a B, podendo aproveitar os blocos
+que B já recebeu. Para o File C (10\,MB) com bloco de 4\,KB, o seeder
+ainda estava ativo quando C e D iniciaram, de modo que os três leechers
+concluíram em $\approx 2$\,s com throughput entre 4,6 e 5,2\,MB/s.
+Para arquivos pequenos (File A/B com 4\,KB de bloco), B conclui e encerra
+o processo antes que C e D consigam conectar-se a ele, forçando-os a usar
+apenas A como fonte; as cinco tentativas de reconexão (0,5\,s cada)
+explicam o tempo de $\approx 3$\,s para esses casos.
+O servidor não-bloqueante baseado em \texttt{select()} atendeu múltiplos
+leechers simultâneos com um único loop de eventos, sem degradação
+perceptível para o File C.
 
 \paragraph{Integridade.}
 Todos os 16 cenários testados produziram SHA-256 idêntico ao original,
