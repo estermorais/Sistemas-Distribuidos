@@ -52,7 +52,7 @@ para operações de rede e facilita a leitura do protocolo implementado.
 Cada peer é um processo único com duas threads principais:
 
 \begin{itemize}
-    \item \textbf{Thread Servidor — não-bloqueante com \texttt{select()}}: utiliza
+    \item \textbf{Thread Servidor (não-bloqueante com \texttt{select()})}: utiliza
           um único loop de eventos baseado em \texttt{select.select()} para atender
           múltiplas conexões simultâneas sem criar uma thread por cliente.
           Todos os sockets operam em modo não-bloqueante
@@ -61,7 +61,7 @@ Cada peer é um processo único com duas threads principais:
           Buffers de recepção e envio por socket permitem processar mensagens
           parciais e enfileirar respostas sem bloquear o loop.
 
-    \item \textbf{Thread Cliente — conexões persistentes}: ao iniciar, o leecher
+    \item \textbf{Thread Cliente (conexões persistentes)}: ao iniciar, o leecher
           conecta-se a \emph{todos} os vizinhos configurados e mantém essas conexões
           TCP abertas durante toda a transferência. Os blocos são solicitados em
           \emph{round-robin} entre as conexões persistentes, reutilizando o mesmo
