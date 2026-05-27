@@ -1,5 +1,12 @@
 [LEECHER] 'fileB_1m.bin'  256 blocos  1048576 bytes
-[SERVER] ouvindo na porta 5003
+[SERVER] ouvindo na porta 5003 (select/non-blocking)
+[CLIENT] conectado a 127.0.0.1:5000
+[CLIENT] tentativa 1/5 falhou (127.0.0.1:5001): [Errno 111] Connection refused
+[CLIENT] tentativa 2/5 falhou (127.0.0.1:5001): [Errno 111] Connection refused
+[CLIENT] tentativa 3/5 falhou (127.0.0.1:5001): [Errno 111] Connection refused
+[CLIENT] tentativa 4/5 falhou (127.0.0.1:5001): [Errno 111] Connection refused
+[CLIENT] tentativa 5/5 falhou (127.0.0.1:5001): [Errno 111] Connection refused
+[CLIENT] nao foi possivel conectar a 127.0.0.1:5001
 [CLIENT] bloco     0/255  (0.4%)  <- 127.0.0.1:5000
 [CLIENT] bloco     1/255  (0.8%)  <- 127.0.0.1:5000
 [CLIENT] bloco     2/255  (1.2%)  <- 127.0.0.1:5000
@@ -258,7 +265,7 @@
 [CLIENT] bloco   255/255  (100.0%)  <- 127.0.0.1:5000
 
 [ASSEMBLE] remontando fileB_1m.bin ...
-[ASSEMBLE] arquivo : output/received_fileB_1m.bin  (1048576 bytes)
-[ASSEMBLE] tempo   : 0.780 s  (1312.5 KB/s)
+[ASSEMBLE] arquivo : output/received_p5003_fileB_1m.bin  (1048576 bytes)
+[ASSEMBLE] tempo   : 3.073 s  (333.3 KB/s)
 [ASSEMBLE] sha256  : OK
 [DONE] transferencia concluida.

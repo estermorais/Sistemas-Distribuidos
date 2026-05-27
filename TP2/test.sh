@@ -155,6 +155,7 @@ run_test_2peers fileC_10m.bin "fileC_10m_2peers"
 # 4 peers
 run_test_4peers fileA_10k.bin "fileA_10k_4peers"
 run_test_4peers fileB_1m.bin  "fileB_1m_4peers"
+run_test_4peers fileC_10m.bin "fileC_10m_4peers"
 
 echo ""
 echo "========================================"

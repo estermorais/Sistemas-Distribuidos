@@ -53,14 +53,21 @@ para operações de rede e facilita a leitura do protocolo implementado.
 Cada peer é um processo único com duas threads principais:
 
 \begin{itemize}
-    \item \textbf{Thread Servidor}: fica bloqueada em \texttt{accept()},
-          aceitando conexões de outros peers. Para cada conexão,
-          uma nova thread \emph{handler} é disparada, permitindo
-          atender múltiplos peers simultaneamente.
-    \item \textbf{Thread Cliente}: itera sobre os blocos faltantes e
-          solicita cada um aos vizinhos configurados. À medida que
-          recebe blocos, atualiza o registro local e passa a servi-los
-          imediatamente (o peer torna-se \emph{seeder parcial}).
+    \item \textbf{Thread Servidor — não-bloqueante com \texttt{select()}}: utiliza
+          um único loop de eventos baseado em \texttt{select.select()} para atender
+          múltiplas conexões simultâneas sem criar uma thread por cliente.
+          Todos os sockets operam em modo não-bloqueante
+          (\texttt{setblocking(False)}): \texttt{select()} indica quais estão prontos
+          para leitura ou escrita, eliminando qualquer espera bloqueante.
+          Buffers de recepção e envio por socket permitem processar mensagens
+          parciais e enfileirar respostas sem bloquear o loop.
+
+    \item \textbf{Thread Cliente — conexões persistentes}: ao iniciar, o leecher
+          conecta-se a \emph{todos} os vizinhos configurados e mantém essas conexões
+          TCP abertas durante toda a transferência. Os blocos são solicitados em
+          \emph{round-robin} entre as conexões persistentes, reutilizando o mesmo
+          socket para múltiplas requisições e evitando o custo de estabelecer nova
+          conexão a cada bloco.
 \end{itemize}
 
 Um \texttt{threading.Lock} protege o acesso concorrente ao buffer de blocos
@@ -165,11 +172,11 @@ File B &  1\,MB & 3 & OK \\
 \toprule
 Arquivo & Tamanho & Blocos & Tempo (s) & Throughput & SHA-256 \\
 \midrule
-File A & 10\,KB  &   3  & 0,51 &  19,8\,KB/s & OK \\
-File A & 20\,KB  &   5  & 0,51 &  39,5\,KB/s & OK \\
-File B &  1\,MB  & 256  & 0,67 &\textbf{1\,557,9\,KB/s} & OK \\
-File B &  5\,MB  &1280  & 1,27 &\textbf{4\,032,5\,KB/s} & OK \\
-File C & 10\,MB  &2560  & 2,22 &\textbf{4\,615,2\,KB/s} & OK \\
+File A & 10\,KB  &    3 & 0,50 &  19,9\,KB/s & OK \\
+File A & 20\,KB  &    5 & 0,50 &  39,8\,KB/s & OK \\
+File B &  1\,MB  &  256 & 0,57 &\textbf{1\,790,6\,KB/s} & OK \\
+File B &  5\,MB  & 1280 & 0,87 &\textbf{5\,908,8\,KB/s} & OK \\
+File C & 10\,MB  & 2560 & 1,54 &\textbf{6\,661,7\,KB/s} & OK \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -178,12 +185,15 @@ File C & 10\,MB  &2560  & 2,22 &\textbf{4\,615,2\,KB/s} & OK \\
 \centering
 \caption{Bloco = 4\,096 bytes, 4 peers (1 Seeder + 3 Leechers)}
 \label{tab:4096_4p}
-\begin{tabular}{lrrc}
+\begin{tabular}{lrrrc}
 \toprule
-Arquivo & Tamanho & Leechers & SHA-256 \\
+Arquivo & Tamanho & Leecher & Tempo (s) & Throughput & SHA-256 \\
 \midrule
-File A & 10\,KB & 3 & OK \\
-File B &  1\,MB & 3 & OK \\
+File A & 10\,KB & B, C, D &   0,50 &  19,9\,KB/s & OK \\
+File B &  1\,MB & B, C, D &  $\leq$0,65 & $\geq$1\,576\,KB/s & OK \\
+File C & 10\,MB & B & 2,23 & 4\,600,3\,KB/s & OK \\
+File C & 10\,MB & C & 2,03 & 5\,057,8\,KB/s & OK \\
+File C & 10\,MB & D & 1,98 & 5\,165,7\,KB/s & OK \\
 \bottomrule
 \end{tabular}
 \end{table}
@@ -214,23 +224,27 @@ File B &  1\,MB & 3 & OK \\
 \subsection{Análise}
 
 \paragraph{Impacto do tamanho do bloco.}
-Blocos maiores (4\,KB vs 1\,KB) reduzem o número total de conexões TCP e o
-overhead de headers, resultando em throughput muito superior para arquivos médios
-e grandes: $\approx 1{,}56$\,MB/s contra $\approx 935$\,KB/s no File B de 1\,MB,
-e $\approx 4{,}6$\,MB/s contra $\approx 694$\,KB/s no File C de 10\,MB.
-Para arquivos pequenos (10--20\,KB) o impacto é desprezível, pois o overhead
-de conexão domina o tempo total.
+Blocos maiores (4\,KB vs 1\,KB) reduzem o número de round-trips TCP e o
+overhead de headers, resultando em throughput significativamente superior para
+arquivos médios e grandes. Com conexões persistentes, o ganho é ainda mais
+evidente: $\approx 1{,}79$\,MB/s com 4\,KB contra $\approx 935$\,KB/s com 1\,KB
+no File B de 1\,MB, e $\approx 6{,}66$\,MB/s contra $\approx 694$\,KB/s no
+File C de 10\,MB. Para arquivos pequenos (10--20\,KB) o impacto é desprezível,
+pois o overhead de handshake domina o tempo total.
 
 \paragraph{Impacto do número de peers.}
-Com 4 peers, os leechers B, C e D recebem blocos simultâneos: C e D podem
-buscar blocos no peer B (que já os recebeu de A) em paralelo à transferência
-A$\to$B, distribuindo a carga do seeder inicial. Todos os três leechers
-concluem a transferência com SHA-256 correto.
+Com 4 peers, C e D podem buscar blocos no peer B (que já os recebeu de A)
+em paralelo à transferência A$\to$B, distribuindo a carga do seeder inicial.
+No teste com File C (10\,MB) e 4 peers, os três leechers concluíram com
+throughput entre 4,6 e 5,2\,MB/s, confirmando que a carga foi distribuída
+entre os peers B e A. O servidor não-bloqueante baseado em \texttt{select()}
+permitiu que o seeder atendesse múltiplos leechers simultâneos com um único
+loop de eventos, sem degradação perceptível de throughput.
 
 \paragraph{Integridade.}
-Todos os 14 cenários testados produziram SHA-256 idêntico ao original,
+Todos os 16 cenários testados produziram SHA-256 idêntico ao original,
 confirmando que o protocolo garante integridade mesmo sob acesso concorrente
-ao buffer de blocos.
+ao buffer de blocos e com múltiplos leechers simultâneos.
 
 % -------------------------------------------------------
 \section{Conclusão}

@@ -1,5 +1,6 @@
 [LEECHER] 'fileC_10m.bin'  2560 blocos  10485760 bytes
-[SERVER] ouvindo na porta 5001
+[SERVER] ouvindo na porta 5001 (select/non-blocking)
+[CLIENT] conectado a 127.0.0.1:5000
 [CLIENT] bloco     0/2559  (0.0%)  <- 127.0.0.1:5000
 [CLIENT] bloco     1/2559  (0.1%)  <- 127.0.0.1:5000
 [CLIENT] bloco     2/2559  (0.1%)  <- 127.0.0.1:5000
@@ -2562,7 +2563,7 @@
 [CLIENT] bloco  2559/2559  (100.0%)  <- 127.0.0.1:5000
 
 [ASSEMBLE] remontando fileC_10m.bin ...
-[ASSEMBLE] arquivo : output/received_fileC_10m.bin  (10485760 bytes)
-[ASSEMBLE] tempo   : 2.443 s  (4192.4 KB/s)
+[ASSEMBLE] arquivo : output/received_p5001_fileC_10m.bin  (10485760 bytes)
+[ASSEMBLE] tempo   : 1.537 s  (6661.7 KB/s)
 [ASSEMBLE] sha256  : OK
 [DONE] transferencia concluida.

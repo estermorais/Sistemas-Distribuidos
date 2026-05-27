@@ -1,5 +1,6 @@
 [LEECHER] 'fileA_20k.bin'  5 blocos  20480 bytes
-[SERVER] ouvindo na porta 5001
+[SERVER] ouvindo na porta 5001 (select/non-blocking)
+[CLIENT] conectado a 127.0.0.1:5000
 [CLIENT] bloco     0/4  (20.0%)  <- 127.0.0.1:5000
 [CLIENT] bloco     1/4  (40.0%)  <- 127.0.0.1:5000
 [CLIENT] bloco     2/4  (60.0%)  <- 127.0.0.1:5000
@@ -7,7 +8,7 @@
 [CLIENT] bloco     4/4  (100.0%)  <- 127.0.0.1:5000
 
 [ASSEMBLE] remontando fileA_20k.bin ...
-[ASSEMBLE] arquivo : output/received_fileA_20k.bin  (20480 bytes)
-[ASSEMBLE] tempo   : 0.503 s  (39.7 KB/s)
+[ASSEMBLE] arquivo : output/received_p5001_fileA_20k.bin  (20480 bytes)
+[ASSEMBLE] tempo   : 0.502 s  (39.8 KB/s)
 [ASSEMBLE] sha256  : OK
 [DONE] transferencia concluida.

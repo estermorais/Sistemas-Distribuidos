@@ -1,5 +1,6 @@
 [LEECHER] 'fileB_5m.bin'  1280 blocos  5242880 bytes
-[SERVER] ouvindo na porta 5001
+[SERVER] ouvindo na porta 5001 (select/non-blocking)
+[CLIENT] conectado a 127.0.0.1:5000
 [CLIENT] bloco     0/1279  (0.1%)  <- 127.0.0.1:5000
 [CLIENT] bloco     1/1279  (0.2%)  <- 127.0.0.1:5000
 [CLIENT] bloco     2/1279  (0.2%)  <- 127.0.0.1:5000
@@ -1282,7 +1283,7 @@
 [CLIENT] bloco  1279/1279  (100.0%)  <- 127.0.0.1:5000
 
 [ASSEMBLE] remontando fileB_5m.bin ...
-[ASSEMBLE] arquivo : output/received_fileB_5m.bin  (5242880 bytes)
-[ASSEMBLE] tempo   : 1.336 s  (3831.0 KB/s)
+[ASSEMBLE] arquivo : output/received_p5001_fileB_5m.bin  (5242880 bytes)
+[ASSEMBLE] tempo   : 0.867 s  (5908.8 KB/s)
 [ASSEMBLE] sha256  : OK
 [DONE] transferencia concluida.

@@ -15,11 +15,11 @@ import numpy as np
 arquivos   = ['File A\n10 KB', 'File A\n20 KB', 'File B\n1 MB', 'File B\n5 MB', 'File C\n10 MB']
 tamanhos   = [10, 20, 1024, 5120, 10240]   # KB
 
-tempo_1k   = [0.51,  0.51,  1.09,  5.27,  14.77]  # segundos
-tempo_4k   = [0.51,  0.51,  0.67,  1.27,   2.22]
+tempo_1k   = [0.51,  0.51,  1.09,  5.27,  14.77]  # segundos (bloco 1 KB)
+tempo_4k   = [0.50,  0.50,  0.57,  0.87,   1.54]  # segundos (bloco 4 KB)
 
-thru_1k    = [19.7,  39.0,  934.9,  970.5,  694.0]  # KB/s
-thru_4k    = [19.8,  39.5, 1557.9, 4032.5, 4615.2]
+thru_1k    = [19.7,  39.0,   934.9,   970.5,   694.0]  # KB/s (bloco 1 KB)
+thru_4k    = [19.9,  39.8, 1790.6,  5908.8,  6661.7]  # KB/s (bloco 4 KB)
 
 x = np.arange(len(arquivos))
 w = 0.35   # largura das barras
