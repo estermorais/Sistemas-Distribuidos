@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nexus Chat</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ── Auth ── -->
+  <div id="auth-screen" class="screen active">
+    <div class="auth-bg">
+      <div class="auth-orb orb1"></div>
+      <div class="auth-orb orb2"></div>
+    </div>
+    <div class="auth-card">
+      <div class="auth-brand">
+        <div class="brand-icon">
+          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <rect width="40" height="40" rx="12" fill="url(#g1)"/>
+            <path d="M12 14h16M12 20h10M12 26h13" stroke="white" stroke-width="2.2" stroke-linecap="round"/>
+            <circle cx="30" cy="26" r="5" fill="#F59E0B"/>
+            <path d="M28.5 26l1 1 2-2" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <defs>
+              <linearGradient id="g1" x1="0" y1="0" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#6366F1"/>
+                <stop offset="1" stop-color="#8B5CF6"/>
+              </linearGradient>
+            </defs>
+          </svg>
+        </div>
+        <div>
+          <h1>Nexus Chat</h1>
+          <p>Sistemas Distribuídos · CEFET-MG</p>
+        </div>
+      </div>
+
+      <div class="auth-tabs">
+        <button class="atab active" data-tab="login">Entrar</button>
+        <button class="atab" data-tab="register">Criar conta</button>
+      </div>
+
+      <form id="login-form" class="aform active">
+        <label class="field">
+          <span>Usuário</span>
+          <input type="text" id="login-username" placeholder="seu_usuario" required autocomplete="username"/>
+        </label>
+        <label class="field">
+          <span>Senha</span>
+          <input type="password" id="login-password" placeholder="••••••••" required autocomplete="current-password"/>
+        </label>
+        <button type="submit" class="btn-submit">Entrar <svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd"/></svg></button>
+      </form>
+
+      <form id="register-form" class="aform">
+        <label class="field">
+          <span>Usuário</span>
+          <input type="text" id="reg-username" placeholder="seu_usuario" required/>
+        </label>
+        <label class="field">
+          <span>E-mail <em>(opcional)</em></span>
+          <input type="email" id="reg-email" placeholder="email@exemplo.com"/>
+        </label>
+        <label class="field">
+          <span>Senha</span>
+          <input type="password" id="reg-password" placeholder="mínimo 4 caracteres" required/>
+        </label>
+        <button type="submit" class="btn-submit">Criar conta <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"/></svg></button>
+      </form>
+
+      <p id="auth-error"></p>
+    </div>
+  </div>
+
+  <!-- ── Chat ── -->
+  <div id="chat-screen" class="screen">
+
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-top">
+        <div class="sidebar-brand">
+          <svg viewBox="0 0 24 24" fill="none" class="brand-svg">
+            <rect width="24" height="24" rx="7" fill="url(#gs)"/>
+            <path d="M7 8h10M7 12h6M7 16h8" stroke="white" stroke-width="1.6" stroke-linecap="round"/>
+            <defs>
+              <linearGradient id="gs" x1="0" y1="0" x2="24" y2="24">
+                <stop stop-color="#6366F1"/><stop offset="1" stop-color="#8B5CF6"/>
+              </linearGradient>
+            </defs>
+          </svg>
+          <span>Nexus</span>
+        </div>
+        <button id="logout-btn" class="logout-btn" title="Sair">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="me-bar">
+        <div class="me-avatar" id="me-avatar"><span id="me-letter"></span></div>
+        <div class="me-info">
+          <span id="me-username" class="me-name"></span>
+          <span class="me-status">● online</span>
+        </div>
+      </div>
+
+      <div class="search-wrap">
+        <svg viewBox="0 0 20 20" fill="currentColor" class="si">
+          <path fill-rule="evenodd" d="M9 3.5a5.5 5.5 0 100 11 5.5 5.5 0 000-11zM2 9a7 7 0 1112.452 4.391l3.328 3.329a.75.75 0 11-1.06 1.06l-3.329-3.328A7 7 0 012 9z" clip-rule="evenodd"/>
+        </svg>
+        <input id="search-users" type="text" placeholder="Buscar..." />
+      </div>
+
+      <div class="nav-list">
+        <div class="nav-section-header">
+          <span>Canais</span>
+          <button id="create-room-btn" class="section-action-btn" title="Criar sala">
+            <svg viewBox="0 0 20 20" fill="currentColor"><path d="M10.75 4.75a.75.75 0 00-1.5 0v4.5h-4.5a.75.75 0 000 1.5h4.5v4.5a.75.75 0 001.5 0v-4.5h4.5a.75.75 0 000-1.5h-4.5v-4.5z"/></svg>
+          </button>
+        </div>
+        <div id="rooms-list"></div>
+
+        <div class="nav-section-header" id="dm-section" style="display:none">
+          <span>Mensagens diretas</span>
+        </div>
+        <div id="dm-list"></div>
+      </div>
+
+      <div class="sidebar-bottom">
+        <button id="delete-account-btn" class="delete-account-btn" title="Excluir conta">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4h6v2"/>
+          </svg>
+          <span>Excluir conta</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main -->
+    <main class="chat-main">
+
+      <!-- Empty state -->
+      <div id="empty-state" class="empty-state">
+        <svg viewBox="0 0 80 80" fill="none" class="empty-icon">
+          <circle cx="40" cy="40" r="40" fill="#1E293B"/>
+          <rect x="20" y="26" width="40" height="28" rx="6" fill="none" stroke="#6366F1" stroke-width="2"/>
+          <path d="M28 36h24M28 43h16" stroke="#6366F1" stroke-width="2" stroke-linecap="round"/>
+          <circle cx="56" cy="54" r="8" fill="#6366F1"/>
+          <path d="M53.5 54l1.5 1.5 3-3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <h2>Bem-vindo ao Nexus Chat</h2>
+        <p>Selecione um canal ou contato para começar</p>
+      </div>
+
+      <!-- Conversa ativa -->
+      <div id="chat-view" style="display:none; flex-direction:column; height:100%">
+
+        <div class="chat-topbar">
+          <div class="topbar-left">
+            <div class="topbar-avatar" id="topbar-avatar"></div>
+            <div>
+              <div class="topbar-name" id="topbar-name"></div>
+              <div class="topbar-sub" id="topbar-sub"></div>
+            </div>
+          </div>
+          <div class="topbar-right">
+            <span id="ws-dot" class="ws-dot off" title="WebSocket"></span>
+          </div>
+        </div>
+
+        <div class="messages-wrap" id="messages-container"></div>
+
+        <div class="composer">
+          <button class="composer-btn" title="Emoji">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+              <circle cx="12" cy="12" r="10"/><path d="M8 14s1.5 2 4 2 4-2 4-2"/><line x1="9" y1="9" x2="9.01" y2="9"/><line x1="15" y1="9" x2="15.01" y2="9"/>
+            </svg>
+          </button>
+          <form id="msg-form" class="composer-form">
+            <input id="msg-input" type="text" placeholder="Mensagem…" autocomplete="off"/>
+          </form>
+          <button class="send-btn" id="send-btn" title="Enviar">
+            <svg viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z"/>
+            </svg>
+          </button>
+        </div>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Modal criar sala -->
+  <div id="modal-overlay" class="modal-overlay" style="display:none">
+    <div class="modal-box">
+      <h3>Nova sala</h3>
+      <p>O nome não pode conter espaços (use hífen).</p>
+      <form id="create-room-form">
+        <input id="room-name-input" type="text" placeholder="ex: dev-backend" maxlength="40" required autocomplete="off"/>
+        <div class="modal-actions">
+          <button type="button" id="modal-cancel" class="btn-cancel">Cancelar</button>
+          <button type="submit" class="btn-submit-sm">Criar</button>
+        </div>
+      </form>
+      <p id="room-error" class="form-error"></p>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

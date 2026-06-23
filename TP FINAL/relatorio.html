@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"/>
+<title>Relatório – Sistema de Chat Distribuído</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', 'Segoe UI', sans-serif;
+    font-size: 11pt;
+    color: #1a1a2e;
+    background: #f5f5f5;
+    line-height: 1.6;
+  }
+
+  .page {
+    width: 210mm;
+    min-height: 297mm;
+    margin: 0 auto;
+    padding: 18mm 20mm 18mm 20mm;
+    background: #fff;
+    box-shadow: 0 0 30px rgba(0,0,0,.12);
+  }
+
+  /* ── Header ── */
+  .doc-header {
+    border-bottom: 3px solid #6366F1;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+  }
+  .doc-header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 16px;
+  }
+  .institution { font-size: 9pt; color: #64748B; line-height: 1.4; }
+  .institution strong { color: #1a1a2e; font-size: 10pt; }
+  .badge {
+    background: linear-gradient(135deg, #6366F1, #8B5CF6);
+    color: white;
+    font-size: 8pt;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+    align-self: center;
+  }
+  .doc-title {
+    margin-top: 10px;
+    font-size: 18pt;
+    font-weight: 700;
+    color: #1a1a2e;
+    line-height: 1.2;
+  }
+  .doc-subtitle {
+    font-size: 10pt;
+    color: #64748B;
+    margin-top: 4px;
+  }
+  .doc-meta {
+    display: flex;
+    gap: 24px;
+    margin-top: 10px;
+    font-size: 9pt;
+    color: #64748B;
+  }
+  .doc-meta span strong { color: #1a1a2e; }
+
+  /* ── Sections ── */
+  h2 {
+    font-size: 13pt;
+    font-weight: 700;
+    color: #6366F1;
+    margin: 20px 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid #E2E8F0;
+  }
+  h3 {
+    font-size: 11pt;
+    font-weight: 600;
+    color: #1a1a2e;
+    margin: 12px 0 5px;
+  }
+  p { margin-bottom: 7px; text-align: justify; }
+  ul, ol { margin: 6px 0 8px 20px; }
+  li { margin-bottom: 3px; }
+
+  /* ── Architecture diagram ── */
+  .arch-box {
+    background: #F8FAFC;
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 14px 16px;
+    margin: 10px 0;
+    font-size: 9.5pt;
+  }
+  .arch-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 4px 0;
+  }
+  .svc {
+    background: #6366F1;
+    color: white;
+    padding: 5px 12px;
+    border-radius: 6px;
+    font-size: 9pt;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .svc.green  { background: #10B981; }
+  .svc.slate  { background: #475569; }
+  .svc.amber  { background: #F59E0B; }
+  .svc.red    { background: #EF4444; }
+  .arrow { color: #94A3B8; font-size: 12pt; font-weight: 700; }
+  .arch-label { font-size: 8.5pt; color: #64748B; font-style: italic; margin-left: 4px; }
+
+  /* ── Tables ── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 10px 0;
+    font-size: 9.5pt;
+  }
+  th {
+    background: #6366F1;
+    color: white;
+    padding: 7px 10px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 9pt;
+  }
+  td { padding: 6px 10px; border-bottom: 1px solid #E2E8F0; }
+  tr:nth-child(even) td { background: #F8FAFC; }
+
+  /* ── Code ── */
+  code {
+    background: #F1F5F9;
+    border: 1px solid #E2E8F0;
+    border-radius: 4px;
+    padding: 1px 5px;
+    font-family: 'Courier New', monospace;
+    font-size: 9pt;
+    color: #6366F1;
+  }
+  pre {
+    background: #1E293B;
+    color: #E2E8F0;
+    padding: 10px 14px;
+    border-radius: 6px;
+    font-family: 'Courier New', monospace;
+    font-size: 8.5pt;
+    margin: 8px 0;
+    overflow: hidden;
+    line-height: 1.5;
+  }
+
+  /* ── Result boxes ── */
+  .result-box {
+    border-left: 4px solid #10B981;
+    background: #F0FDF4;
+    padding: 8px 12px;
+    border-radius: 0 6px 6px 0;
+    margin: 8px 0;
+    font-size: 9.5pt;
+  }
+  .result-box.warn {
+    border-color: #F59E0B;
+    background: #FFFBEB;
+  }
+  .result-box strong { color: #065F46; }
+  .result-box.warn strong { color: #92400E; }
+
+  /* ── Test results grid ── */
+  .test-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin: 10px 0;
+  }
+  .test-card {
+    border: 1px solid #E2E8F0;
+    border-radius: 8px;
+    padding: 10px 14px;
+    background: #F8FAFC;
+  }
+  .test-card-title { font-weight: 700; font-size: 9pt; color: #1a1a2e; margin-bottom: 4px; }
+  .test-stat { font-size: 22pt; font-weight: 800; color: #10B981; line-height: 1; }
+  .test-label { font-size: 8pt; color: #64748B; margin-top: 2px; }
+  .pass { color: #10B981; font-weight: 700; }
+  .fail { color: #EF4444; font-weight: 700; }
+
+  /* ── Footer ── */
+  .doc-footer {
+    margin-top: 24px;
+    padding-top: 10px;
+    border-top: 1px solid #E2E8F0;
+    font-size: 8.5pt;
+    color: #94A3B8;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* ── Print ── */
+  @media print {
+    body { background: white; }
+    .page { box-shadow: none; margin: 0; }
+    h2 { break-after: avoid; }
+    table { break-inside: avoid; }
+    .test-grid { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- ═══ CABEÇALHO ═══ -->
+  <div class="doc-header">
+    <div class="doc-header-top">
+      <div class="institution">
+        <strong>CEFET-MG - Centro Federal de Educação Tecnológica de Minas Gerais</strong><br>
+        Disciplina: Sistemas Distribuídos &nbsp;|&nbsp; Professora: Michelle Hanne &nbsp;|&nbsp; 2026/1
+      </div>
+      <span class="badge">Trabalho Final</span>
+    </div>
+    <div class="doc-title">Nexus Chat: Sistema de Chat Distribuído</div>
+    <div class="doc-subtitle">Plataforma de comunicação em tempo real com arquitetura de microsserviços</div>
+    <div class="doc-meta">
+      <span><strong>Aluna:</strong> Ester Morais Neves</span>
+      <span><strong>Data:</strong> Junho / 2026</span>
+      <span><strong>Repositório:</strong> <code>https://github.com/estermorais/Sistemas-Distribuidos/tree/tp-1-e-2</code></span>
+    </div>
+  </div>
+
+  <!-- ═══ 1. INTRODUÇÃO ═══ -->
+  <h2>1. Introdução e Objetivos</h2>
+  <p>
+    O objetivo deste trabalho foi desenvolver o <strong>Nexus Chat</strong>, um sistema de chat em tempo real
+    usando arquitetura de microsserviços. A ideia era que vários usuários pudessem se comunicar de forma
+    confiável, tanto em canais públicos (1:N) quanto em conversas privadas (1:1), com as mensagens
+    chegando de forma instantânea.
+  </p>
+  <p>
+    Para isso, três requisitos principais guiaram o projeto: manter o sistema disponível mesmo que
+    um componente falhe, garantir baixa latência na entrega das mensagens e conseguir adicionar
+    mais servidores conforme o número de usuários cresce. Os dois primeiros foram atendidos com
+    WebSockets e a separação em serviços independentes; o terceiro foi resolvido usando Redis Pub/Sub
+    para sincronizar as réplicas do Chat Service.
+  </p>
+
+  <!-- ═══ 2. ARQUITETURA ═══ -->
+  <h2>2. Arquitetura do Sistema</h2>
+  <p>
+    O sistema foi dividido em dois microsserviços independentes, cada um rodando em container Docker separado.
+    Um Nginx na frente recebe todas as requisições e distribui para o serviço correto, funcionando
+    também como balanceador de carga entre as duas réplicas do Chat Service. O Docker Compose
+    orquestra a inicialização e a comunicação entre todos os componentes.
+  </p>
+
+  <!-- Diagrama visual de arquitetura -->
+  <div style="background:#F8FAFC; border:1px solid #E2E8F0; border-radius:10px; padding:16px; margin:12px 0;">
+    <svg viewBox="0 0 680 340" xmlns="http://www.w3.org/2000/svg" style="width:100%;font-family:Inter,sans-serif;font-size:11px;">
+      <!-- Browser -->
+      <rect x="10" y="130" width="90" height="50" rx="8" fill="#475569"/>
+      <text x="55" y="150" fill="white" text-anchor="middle" font-weight="600" font-size="10">Browser</text>
+      <text x="55" y="165" fill="#CBD5E1" text-anchor="middle" font-size="9">Cliente Web</text>
+      <!-- Arrow to Nginx -->
+      <line x1="100" y1="155" x2="145" y2="155" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+      <text x="122" y="148" fill="#64748B" text-anchor="middle" font-size="8">HTTP/WS</text>
+      <!-- Nginx -->
+      <rect x="145" y="115" width="100" height="80" rx="8" fill="#F59E0B"/>
+      <text x="195" y="148" fill="white" text-anchor="middle" font-weight="700" font-size="11">Nginx</text>
+      <text x="195" y="163" fill="#FEF3C7" text-anchor="middle" font-size="9">Reverse Proxy</text>
+      <text x="195" y="178" fill="#FEF3C7" text-anchor="middle" font-size="9">Load Balancer :80</text>
+      <!-- Arrow to Auth -->
+      <line x1="245" y1="138" x2="300" y2="95" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+      <text x="268" y="108" fill="#64748B" text-anchor="middle" font-size="8">/api/auth/</text>
+      <!-- Arrow to Chat -->
+      <line x1="245" y1="172" x2="300" y2="215" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+      <text x="268" y="205" fill="#64748B" text-anchor="middle" font-size="8">/api/chat/ /ws/</text>
+      <!-- Auth Service -->
+      <rect x="300" y="55" width="120" height="60" rx="8" fill="#6366F1"/>
+      <text x="360" y="78" fill="white" text-anchor="middle" font-weight="700" font-size="11">Auth Service</text>
+      <text x="360" y="93" fill="#C7D2FE" text-anchor="middle" font-size="9">FastAPI :8001</text>
+      <text x="360" y="107" fill="#C7D2FE" text-anchor="middle" font-size="9">JWT + bcrypt</text>
+      <!-- Chat Service replicas -->
+      <rect x="300" y="185" width="120" height="55" rx="8" fill="#6366F1"/>
+      <text x="360" y="206" fill="white" text-anchor="middle" font-weight="700" font-size="11">Chat Service</text>
+      <text x="360" y="220" fill="#C7D2FE" text-anchor="middle" font-size="9">Réplica 1</text>
+      <text x="360" y="232" fill="#C7D2FE" text-anchor="middle" font-size="9">WebSocket + FastAPI</text>
+      <rect x="305" y="250" width="120" height="12" rx="4" fill="#4F46E5" opacity="0.6"/>
+      <text x="365" y="260" fill="#C7D2FE" text-anchor="middle" font-size="8">Réplica 2 (espelhada)</text>
+      <!-- Arrow Auth to Postgres -->
+      <line x1="420" y1="85" x2="475" y2="85" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+      <!-- Arrow Chat to Postgres -->
+      <line x1="420" y1="212" x2="475" y2="180" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+      <!-- PostgreSQL -->
+      <rect x="475" y="55" width="110" height="140" rx="8" fill="#10B981"/>
+      <text x="530" y="88" fill="white" text-anchor="middle" font-weight="700" font-size="11">PostgreSQL</text>
+      <text x="530" y="104" fill="#D1FAE5" text-anchor="middle" font-size="9">Tabela: users</text>
+      <text x="530" y="118" fill="#D1FAE5" text-anchor="middle" font-size="9">Tabela: messages</text>
+      <text x="530" y="132" fill="#D1FAE5" text-anchor="middle" font-size="9">Tabela: rooms</text>
+      <text x="530" y="148" fill="#D1FAE5" text-anchor="middle" font-size="9">port 5432</text>
+      <!-- Arrow Chat to Redis -->
+      <line x1="420" y1="232" x2="475" y2="265" stroke="#94A3B8" stroke-width="1.5" marker-end="url(#arr)"/>
+      <text x="450" y="256" fill="#64748B" text-anchor="middle" font-size="8">Pub/Sub</text>
+      <!-- Redis -->
+      <rect x="475" y="245" width="110" height="60" rx="8" fill="#EF4444"/>
+      <text x="530" y="268" fill="white" text-anchor="middle" font-weight="700" font-size="11">Redis</text>
+      <text x="530" y="283" fill="#FEE2E2" text-anchor="middle" font-size="9">Pub/Sub</text>
+      <text x="530" y="297" fill="#FEE2E2" text-anchor="middle" font-size="9">Sinc. réplicas</text>
+      <!-- Docker Compose label -->
+      <rect x="5" y="5" width="670" height="325" rx="10" fill="none" stroke="#6366F1" stroke-width="1.5" stroke-dasharray="6 3"/>
+      <text x="340" y="325" fill="#6366F1" text-anchor="middle" font-size="9" font-weight="600">Docker Compose</text>
+      <!-- Arrow marker -->
+      <defs>
+        <marker id="arr" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto">
+          <path d="M0,0 L0,6 L8,3 z" fill="#94A3B8"/>
+        </marker>
+      </defs>
+    </svg>
+  </div>
+
+  <h3>Como funciona o fluxo</h3>
+  <p>
+    O browser se conecta sempre ao Nginx na porta 80. Requisições para <code>/api/auth/</code>
+    são redirecionadas ao Auth Service; requisições para <code>/api/chat/</code> e conexões
+    WebSocket (<code>/ws/</code>) vão para uma das duas réplicas do Chat Service via round-robin.
+    Quando uma réplica recebe uma mensagem, ela publica no canal Redis; a outra réplica está
+    inscrita nesse canal e repassa para seus usuários conectados.
+  </p>
+
+  <h3>Tecnologias utilizadas</h3>
+  <table>
+    <tr><th>Componente</th><th>Tecnologia</th><th>Por que foi escolhido</th></tr>
+    <tr><td>Auth Service</td><td>Python / FastAPI</td><td>Fácil de usar, assíncrono por padrão e gera documentação automática</td></tr>
+    <tr><td>Chat Service</td><td>Python / FastAPI + WebSockets</td><td>Tem suporte nativo a WebSockets sem precisar de biblioteca extra</td></tr>
+    <tr><td>Banco de dados</td><td>PostgreSQL 15</td><td>Confiável, suporta transações e é amplamente documentado</td></tr>
+    <tr><td>Mensageria</td><td>Redis 7 Pub/Sub</td><td>Muito rápido, resolve o problema de múltiplas réplicas sem complicar</td></tr>
+    <tr><td>Autenticação</td><td>JWT (HS256) + bcrypt</td><td>Não precisa guardar sessão no servidor e bcrypt é seguro para senhas</td></tr>
+    <tr><td>Infraestrutura</td><td>Docker Compose + Nginx</td><td>Simples de configurar e permite escalar só o serviço que precisar</td></tr>
+    <tr><td>Frontend</td><td>HTML5 / CSS3 / JS puro</td><td>Sem dependências, roda direto no navegador sem etapa de build</td></tr>
+  </table>
+
+  <!-- ═══ 3. IMPLEMENTAÇÃO ═══ -->
+  <h2>3. Implementação e Decisões Tomadas</h2>
+
+  <h3>3.1 Auth Service</h3>
+  <p>
+    Este serviço cuida de tudo relacionado a usuário: cadastro, login e listagem de contatos.
+    Quando o usuário faz login, o sistema gera um token JWT válido por 60 minutos com o
+    <code>user_id</code> e o nome do usuário. As senhas nunca são guardadas em texto puro;
+    o bcrypt gera um hash diferente a cada cadastro, o que evita problemas com rainbow table.
+    Os endpoints disponíveis são <code>POST /register</code>, <code>POST /login</code>,
+    <code>GET /users</code> e <code>GET /verify</code>.
+  </p>
+
+  <h3>3.2 Chat Service e WebSockets</h3>
+  <p>
+    Cada usuário abre uma conexão WebSocket na rota <code>/ws/{user_id}?token=JWT</code>.
+    O token é verificado logo no início da conexão; se for inválido, a conexão é recusada.
+    Internamente, uma classe chamada <code>ConnectionManager</code> guarda as conexões abertas
+    e usa o Redis Pub/Sub para repassar as mensagens. Isso foi importante porque, com duas
+    réplicas do serviço rodando ao mesmo tempo, uma mensagem recebida por uma réplica precisa
+    chegar aos usuários conectados na outra também.
+  </p>
+
+  <div class="result-box">
+    <strong>Problema encontrado e resolvido:</strong> na primeira versão, cada mensagem chegava
+    duplicada no chat. Isso acontecia porque o código entregava a mensagem direto na conexão local
+    e também pelo Redis ao mesmo tempo. A solução foi fazer tudo passar pelo Redis, deixando
+    a entrega local só como fallback quando o Redis não está disponível.
+  </div>
+
+  <h3>3.3 Persistência das mensagens</h3>
+  <p>
+    As mensagens ficam salvas na tabela <code>messages</code> do PostgreSQL. Para mensagens
+    privadas, o campo <code>recipient_id</code> guarda o destinatário; para canais públicos,
+    esse campo fica nulo e o <code>room_id</code> identifica o canal. O histórico pode ser
+    consultado pelos endpoints <code>GET /messages?room_id=X</code> para canais e
+    <code>GET /messages/private/{id}</code> para conversas diretas.
+  </p>
+
+  <h3>3.4 Frontend</h3>
+  <p>
+    A interface foi feita com HTML, CSS e JavaScript puro, sem nenhum framework. O tema é escuro
+    com cores em tons de roxo e índigo. Quando a conexão WebSocket cai, o sistema tenta reconectar
+    automaticamente a cada 3 segundos. As mensagens não lidas mostram um badge numérico na lista
+    de conversas, e a sessão é restaurada do <code>sessionStorage</code> se o usuário recarregar
+    a página sem ter feito logout.
+  </p>
+
+  <h3>3.5 Criação de Salas</h3>
+  <p>
+    O sistema suporta a criação de salas de forma dinâmica. Ao iniciar, o Chat Service verifica
+    se as salas padrão (<code>geral</code>, <code>tecnologia</code>, <code>off-topic</code>)
+    existem no banco e as cria automaticamente caso não existam. Além disso, qualquer usuário
+    autenticado pode criar novas salas pelo botão "+" na barra lateral. O nome é normalizado
+    automaticamente (espaços viram hífens, tudo em minúsculo) e nomes duplicados são rejeitados
+    com erro 409. As salas ficam salvas na tabela <code>rooms</code> do PostgreSQL e são carregadas
+    dinamicamente pelo frontend a cada login.
+  </p>
+
+  <h3>3.6 Exclusão de Conta</h3>
+  <p>
+    Um usuário pode excluir sua própria conta através do botão "Excluir conta" na parte inferior
+    da barra lateral. A exclusão é feita pelo endpoint <code>DELETE /users/me</code> no Auth
+    Service e funciona como um <em>soft delete</em>: o campo <code>is_active</code> do usuário
+    é marcado como <code>false</code> no banco, mas o registro permanece para manter o histórico
+    de mensagens consistente. Após a exclusão, a sessão é encerrada automaticamente e o usuário
+    não consegue mais fazer login com aquela conta.
+  </p>
+
+  <!-- ═══ 4. TESTES ═══ -->
+  <h2>4. Testes e Resultados</h2>
+
+  <div class="test-grid">
+    <div class="test-card">
+      <div class="test-card-title">Testes Unitários - Auth Service</div>
+      <div class="test-stat">8</div>
+      <div class="test-label">testes &nbsp;<span class="pass">8 passaram ✓</span></div>
+    </div>
+    <div class="test-card">
+      <div class="test-card-title">Testes de Integração - Auth Service</div>
+      <div class="test-stat">11</div>
+      <div class="test-label">testes &nbsp;<span class="pass">11 passaram ✓</span></div>
+    </div>
+    <div class="test-card">
+      <div class="test-card-title">Testes Unitários - Chat Service</div>
+      <div class="test-stat">5</div>
+      <div class="test-label">testes &nbsp;<span class="pass">5 passaram ✓</span></div>
+    </div>
+    <div class="test-card">
+      <div class="test-card-title">Testes de Integração - Chat Service</div>
+      <div class="test-stat">9</div>
+      <div class="test-label">testes &nbsp;<span class="pass">9 passaram ✓</span></div>
+    </div>
+  </div>
+
+  <h3>4.1 Testes Unitários</h3>
+  <p>
+    Os testes unitários foram feitos para verificar as partes mais críticas de cada serviço
+    de forma isolada, sem depender de banco de dados ou rede. No Auth Service, foram testados
+    o hash de senhas com bcrypt (incluindo casos de senha vazia e senha errada), a geração do
+    token JWT e a validação dos campos dentro do token. No Chat Service, foram testados a
+    decodificação do JWT (token válido, adulterado e com secret errado) e se o campo
+    <code>is_private</code> das mensagens estava sendo setado corretamente.
+  </p>
+
+  <h3>4.2 Testes de Integração</h3>
+  <p>
+    Para os testes de integração, foi usado um banco SQLite em memória no lugar do PostgreSQL,
+    aproveitando o sistema de injeção de dependência do FastAPI para trocar o banco sem mudar
+    o código do serviço. Isso permitiu rodar todos os testes sem precisar de Docker ou banco
+    externo instalado.
+  </p>
+  <p>
+    Os cenários testados incluíram: cadastro de usuário novo, tentativa de cadastro com nome
+    duplicado, senha muito curta; login correto, login com senha errada e usuário inexistente;
+    acesso às rotas protegidas com e sem token; salvar mensagens públicas e privadas no banco;
+    paginação do histórico; e conexão WebSocket com token inválido, envio de mensagem para canal
+    e envio de mensagem privada.
+  </p>
+
+  <h3>4.3 Teste de Carga</h3>
+  <p>
+    O teste de carga foi feito com um script Python que usa a biblioteca <code>websockets</code>
+    para simular vários usuários ao mesmo tempo. O script registra os usuários, faz login de
+    todos em paralelo, aguarda todos estarem conectados via WebSocket e então dispara o envio
+    simultâneo. Abaixo o resultado com 10 usuários e 5 mensagens cada:
+  </p>
+  <pre>python load-test/load_test.py --users 10 --messages 5 --host localhost
+
+ Tempo total:           3.24s
+ Usuarios com sucesso:  10/10
+ Mensagens enviadas:    50
+ Mensagens recebidas:   487
+ Erros:                 0
+ Login - media:         18.3ms
+ Login - p95:           24.1ms
+ Throughput:            15.4 msg/s
+
+RESULTADO FINAL: PASSOU</pre>
+
+  <div class="result-box">
+    As 10 conexões simultâneas foram atendidas sem nenhum erro. O tempo médio de login ficou
+    em 18 ms e o sistema processou 15 mensagens por segundo. O número de mensagens recebidas
+    (487) ser maior que o enviado (50) é esperado porque cada mensagem de canal chega para
+    todos os usuários conectados naquele momento.
+  </div>
+
+  <!-- ═══ 5. CONCLUSÃO ═══ -->
+  <h2>5. Conclusão</h2>
+  <p>
+    O trabalho atendeu aos requisitos pedidos e foi além: dois microsserviços independentes
+    (Auth e Chat), comunicação em tempo real via WebSockets, persistência no PostgreSQL,
+    interface funcional e ainda funcionalidades extras como criação dinâmica de salas e
+    exclusão de conta. A parte que exigiu mais atenção foi o Redis Pub/Sub, que resolveu
+    o problema de múltiplas réplicas do Chat Service sem precisar centralizar as conexões
+    em um único processo.
+  </p>
+  <p>
+    No total foram 33 testes automatizados cobrindo as funcionalidades principais. O teste
+    de carga confirmou que o sistema aguenta os 10 usuários simultâneos e ainda tem espaço
+    para crescer. O código está disponível no repositório
+    <code>github.com/estermorais/Sistemas-Distribuidos</code> na branch <code>tp-1-e-2</code>.
+    Como melhoria futura, seria interessante adicionar confirmação de entrega de mensagem
+    e um mecanismo de reconexão com recuperação do histórico não recebido durante a queda.
+  </p>
+
+  <div class="doc-footer">
+    <span>Nexus Chat - Sistemas Distribuídos 2026/1 - CEFET-MG</span>
+    <span>Ester Morais Neves</span>
+  </div>
+
+</div>
+
+<script>
+  // Abre diálogo de impressão ao carregar (para gerar PDF)
+  // Remova esta linha se não quiser o diálogo automático
+  // window.onload = () => window.print();
+</script>
+</body>
+</html>
