@@ -97,8 +97,3 @@ TP FINAL/
 ├── relatorio.html        # Relatório do trabalho
 └── apresentacao.html     # Slides de apresentação
 ```
-
-## Documentação
-
-- **Relatório:** abra `relatorio.html` no navegador (ou imprima como PDF)
-- **Apresentação:** abra `apresentacao.html` no navegador — navegue com as setas do teclado
